@@ -25,7 +25,7 @@ class OrderController extends Controller
     /**
      * @route /api/orders
      * @method POST
-     * @desc Save user orders
+     * @desc Save user order
      */
     public function store(Request $request)
     {
