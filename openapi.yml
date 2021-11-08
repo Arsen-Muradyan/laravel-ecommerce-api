@@ -1,0 +1,289 @@
+openapi: '3.0.2'
+info:
+  title: Laravel Ecommerce API
+  version: '1.0'
+servers:
+  - url: http://127.0.0.1:8000/api
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        name:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
+    Category:
+      type: object
+      properties:
+        name: 
+          type: string
+    Order:
+      type: object
+      properties:
+        product_id:
+          type: integer
+        quantity: 
+          type: integer
+        cart_id:
+          type: string
+    Product:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        image:
+          type: string
+        category_id:
+          type: integer
+        price:
+          type: number
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+paths:
+  /orders:
+    get:
+      tags:
+        - "orders"
+      security:
+        - bearerAuth: []
+      
+      description: Get user  orders
+      responses:
+        '200':
+          description: OK
+    post:
+      tags:
+        - "orders"
+      security:
+        - bearerAuth: []
+      
+      description: Create order
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Order"
+      responses:
+        '200':
+          description: OK
+  /categories/{categoriesId}:
+    delete:
+      tags:
+        - "categories"
+      security:
+        - bearerAuth: []
+      
+      description: Delete Category, require admin permission
+      parameters:
+        - in: path
+          schema: 
+            type: integer
+          required: true
+          name: categoriesId
+
+      responses:
+        200:
+          description: OK
+        404:
+          description: Not Found
+        '401':
+          description: Forbidden
+  /user:
+    get: 
+      description: Get logged in user data
+      tags: 
+        - "users"
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: OK
+  /login:
+    post:
+      tags:
+        - 'users'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: OK
+  /logout:
+    post:
+      security:
+        - bearerAuth: []
+      description: Logout action, reset token
+      tags: 
+        - 'users'
+      responses:
+        200: 
+          description: 'OK'
+  /register:
+    post:
+      tags:
+        - "users"
+      requestBody: 
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                password_confirmation:
+                  type: string
+      description: Register new user
+      responses:
+        '200':
+          description: OK
+  /categories/{id}/products:
+    get:
+      tags:
+        - "categories"
+      description: Get All products by specfieid category
+      parameters:
+        - in: path
+          schema: 
+            type: integer
+          name: id
+          required: true
+      responses:
+        '200':
+          description: OK
+
+  /categories:
+    get:
+      tags:
+        - "categories"
+      description: Get All Categoires
+      responses:
+        '200':
+          description: OK
+
+    post:
+      tags:
+        - "categories"
+      description: Create New Category, Required admin permission
+      security:
+        - bearerAuth: []
+      
+      requestBody:
+        content: 
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Forbidden
+  /products/search/{name}:
+    get:
+      tags:
+        - "products"
+      description: Search Product by name
+      parameters:
+        - in: path
+          schema: 
+            type: string
+          name: name
+          required: true
+          description: Name for search
+      responses:
+        '200':
+          description: OK
+  /products/{productId}:
+    get:
+      tags:
+        - "products"
+      description: Get Proudct By Id
+      parameters:
+        - in: path
+          schema: 
+            type: integer
+          name: productId
+          required: true
+          description: Numeric id of the product to get
+      responses:
+        '200':
+          description: OK
+    put: 
+      tags:
+        - "products"
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          schema: 
+            type: integer
+          name: productId
+          required: true
+          description: Numeric id of the product to get
+      description: Update Product, Required admin permission
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        200: 
+          description: Updated
+    delete:
+      tags:
+        - "products"
+      security:
+        - bearerAuth: []
+      description: Delete product by id, required admin permission
+      parameters:
+        - in: path
+          schema: 
+            type: integer
+          name: productId
+          required: true
+          description: Numeric id of the product to get 
+      responses:
+        200:
+          description: Deleted       
+  /products:
+    get:
+      tags:
+        - "products"
+      description: Get Products
+      responses:
+        '200':
+          description: OK
+    post:
+      tags:
+        - "products"
+      security:
+        - bearerAuth: []
+      
+      description: Create New Product, Required admin permission
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        201: 
+          description: Created
+  
+  
