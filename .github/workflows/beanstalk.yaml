@@ -14,12 +14,9 @@ jobs:
 
     - name: Generate deployment package
       run: zip -r deploy.zip . -x '*.git*'
-    - name: Get current time
-      uses: josStorer/get-current-time@v2
-      id: current-time
-      with:
-        format: YYYYMMDD-HH
-        utcOffset: "+08:00"
+    - name: Set current date as env variable
+      run: echo "NOW::$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
+
     - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v20
       with:
@@ -27,6 +24,6 @@ jobs:
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         application_name: laravel-ecommerce-api
         environment_name: Laravelecommerceapi-env
-        version_label: "api-${{ steps.current-time.outputs.readableTime }}" 
+        version_label: "api-$NOW" 
         region: us-east-2
         deployment_package: deploy.zip
