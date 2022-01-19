@@ -14,7 +14,12 @@ jobs:
 
     - name: Generate deployment package
       run: zip -r deploy.zip . -x '*.git*'
-
+    - name: Get current time
+      uses: josStorer/get-current-time@v2
+      id: current-time
+      with:
+        format: YYYYMMDD-HH
+        utcOffset: "+08:00"
     - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v20
       with:
