@@ -11,11 +11,30 @@ jobs:
 
     - name: Checkout source code
       uses: actions/checkout@v2
-
+      with:
+        fetch-depth: 0
+  
     - name: Generate deployment package
       run: zip -r deploy.zip . -x '*.git*'
-    - name: Set current date as env variable
-      run: echo "NOW::$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
+    - name: Application Version
+      id: version
+      uses: paulhatch/semantic-version@v4.0.2
+      with:
+          branch: main
+          tag_prefix: "v"
+         
+          major_pattern: "(MAJOR)"
+          minor_pattern: "(MINOR)"
+          format: "${major}.${minor}.${patch}-prerelease${increment}"
+          # Optional path to check for changes. If any changes are detected in the path the
+          # 'changed' output will true. Enter multiple paths separated by spaces.
+          # Named version, will be used as suffix for name version tag
+          # Indicate whether short tags like 'v1' should be supported. If false only full
+          # tags like 'v1.0.0' will be recognized.
+          short_tags: false
+          # If this is set to true, *every* commit will be treated as a new version.
+          bump_each_commit: true
+
 
     - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v20
@@ -24,6 +43,6 @@ jobs:
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         application_name: laravel-ecommerce-api
         environment_name: Laravelecommerceapi-env
-        version_label: "api-$NOW" 
+        version_label: "api-${{ steps.version.outputs.version }}" 
         region: us-east-2
         deployment_package: deploy.zip
