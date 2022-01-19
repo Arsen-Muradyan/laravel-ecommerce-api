@@ -22,6 +22,6 @@ jobs:
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         application_name: laravel-ecommerce-api
         environment_name: Laravelecommerceapi-env
-        version_label: "api-${{ steps.format-time.outputs.replaced }}" 
+        version_label: "api-${{ steps.date.outputs.date }}" 
         region: us-east-2
         deployment_package: deploy.zip
