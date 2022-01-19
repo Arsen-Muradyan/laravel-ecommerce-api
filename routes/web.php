@@ -20,3 +20,6 @@ Route::get('/', function () {
 Route::get('/app', function () {
     return "<h1>App</h1>";
 });
+Route::get('/main', function () {
+    return "<h1>Hello World</h1>";
+});
